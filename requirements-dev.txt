@@ -1,0 +1,11 @@
+# Include runtime dependencies
+-r requirements.txt
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0  # optional, for coverage reports
+
+# Code quality (optional but recommended)
+black>=23.0.0
+ruff>=0.1.0
+mypy>=1.0.0

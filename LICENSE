@@ -1,0 +1,16 @@
+
+---
+
+### 3. `src/agentforge_shared/__init__.py`
+
+```python
+"""AgentForge Shared - common definitions for all services."""
+
+__version__ = "0.1.0"
+
+MIT License
+
+Copyright (c) 2026 Ajay kumar kanamu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+...
