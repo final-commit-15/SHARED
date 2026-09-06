@@ -1,29 +1,175 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
 
-[project]
+[tool.poetry]
 name = "agentforge-shared"
 version = "0.1.0"
-description = "Shared schemas, enums, constants, exceptions, and utilities for AgentForge services."
+description = "Shared schemas, enums, constants, exceptions, configuration, security, telemetry, and utilities for all AgentForge microservices."
+authors = ["AgentForge Platform Team <platform@agentforge.dev>"]
+license = "MIT"
 readme = "README.md"
-license = { text = "MIT" }
-authors = [{ name = "Your Name", email = "you@example.com" }]
-requires-python = ">=3.9"
-dependencies = [
-    "pydantic>=2.0.0",
-    "python-dateutil>=2.8.2",
-]
+homepage = "https://github.com/agentforge/agentforge-shared"
+repository = "https://github.com/agentforge/agentforge-shared"
+documentation = "https://agentforge.dev/docs"
+keywords = ["agentforge", "shared", "microservices", "pydantic", "fastapi"]
+packages = [{ include = "agentforge_shared", from = "src" }]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Typing :: Typed",
 ]
 
-[project.urls]
-Homepage = "https://github.com/your-org/agentforge-shared"
-Repository = "https://github.com/your-org/agentforge-shared"
+[tool.poetry.dependencies]
+python = ">=3.12,<3.15"
+pydantic = ">=2.7,<3.0"
+pydantic-settings = ">=2.3,<3.0"
+email-validator = ">=2.1"
+python-dateutil = ">=2.8.2"
+structlog = ">=24.1"
+orjson = ">=3.10"
+httpx = ">=0.27"
+tenacity = ">=8.2"
+redis = ">=5.0"
+bcrypt = ">=4.1"
+python-jose = { extras = ["cryptography"], version = ">=3.3" }
+prometheus-client = ">=0.20"
+opentelemetry-api = ">=1.24"
+opentelemetry-sdk = ">=1.24"
+opentelemetry-instrumentation-asgi = ">=0.45b0"
+starlette = ">=0.37"
+fastapi = ">=0.110"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["agentforge_shared*"]
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+pytest-asyncio = ">=0.23"
+pytest-cov = ">=5.0"
+pytest-mock = ">=3.12"
+black = ">=24.0"
+ruff = ">=0.4"
+mypy = ">=1.10"
+isort = ">=5.13"
+bandit = ">=1.7"
+build = ">=1.2"
+uvicorn = ">=0.29"
+hypothesis = ">=6.100"
+
+[tool.poetry.scripts]
+agentforge-bump-version = "agentforge_shared.scripts.bump_version:main"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+exclude = ["venv", ".venv", "build", "dist", ".git"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "ASYNC",
+    "S",   # bandit
+    "C4",
+    "RET",
+    "PYI",
+]
+ignore = [
+    "S101",  # assert allowed (we are a library with tests)
+    "B008",  # function call in default arguments (FastAPI dependencies)
+    "S311",  # random usage OK for non-crypto contexts in this lib
+    "S324",  # hashlib usage is intentional and documented
+    "UP007", # keep Optional[] for readability alongside | join
+]
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106", "S107", "S307", "B011", "SLF001", "A003"]
+"examples/*" = ["S105", "S106", "B008"]
+"src/agentforge_shared/security/password.py" = ["S105"]
+unfixable = ["D"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agentforge_shared"]
+force-single-line = false
+combine-as-imports = true
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+include = '\.pyi?$'
+extend-exclude = '''(
+  /venv/
+  /\.venv/
+  /build/
+  /dist/
+)'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["agentforge_shared"]
+src_paths = ["src", "tests"]
+skip = ["venv", ".venv", "build", "dist"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+show_error_codes = true
+files = ["src/agentforge_shared"]
+namespace_packages = true
+exclude = ["src/agentforge_shared/scripts"]
+# Optional dependencies are not always installed; module not found
+# for dev-only tooling is acceptable at library runtime.
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["src.agentforge_shared.config.*"]
+warn_unused_ignores = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore::DeprecationWarning:jose.*",
+]
+markers = [
+    "integration: marks tests that require external infrastructure (redis, etc.)",
+    "slow: marks long-running tests",
+]
+
+[tool.coverage.run]
+source = ["src/agentforge_shared"]
+omit = [
+    "src/agentforge_shared/scripts/*",
+    "src/agentforge_shared/__main__.py",
+]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+show_missing = true
+skip_covered = true
+fail_under = 80

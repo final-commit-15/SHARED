@@ -1,13 +1,13 @@
 """Basic schema tests."""
 
-import pytest
 from datetime import datetime
+
+import pytest
 from pydantic import ValidationError
 
+from agentforge_shared.enums.agent import AgentStatus, AgentType
 from agentforge_shared.schemas.agent import Agent, AgentConfig
-from agentforge_shared.schemas.execution import Execution
 from agentforge_shared.schemas.common import APIResponse
-from agentforge_shared.enums.agent import AgentType, AgentStatus
 
 
 def test_agent_creation():

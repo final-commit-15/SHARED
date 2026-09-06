@@ -1,11 +1,12 @@
 """Exception hierarchy tests."""
 
 import pytest
+
 from agentforge_shared.exceptions import (
     AgentForgeError,
-    ValidationError,
     AuthenticationError,
     NotFoundError,
+    ValidationError,
 )
 
 

@@ -1,0 +1,25 @@
+services:
+  test:
+    build:
+      context: .
+      target: test
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      APP_ENV: test
+      JWT_SECRET_KEY: test-secret-key-for-local-development-only
+      PROMETHEUS_ENABLED: "false"
+    depends_on:
+      redis:
+        condition: service_started
+    volumes:
+      - ./tests:/app/tests:ro
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

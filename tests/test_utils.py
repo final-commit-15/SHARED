@@ -1,7 +1,7 @@
 """Utility function tests."""
 
-from agentforge_shared.utils.id_generator import generate_id, generate_agent_id
-from agentforge_shared.utils.datetime_helpers import utc_now, iso_format
+from agentforge_shared.utils.datetime_helpers import utc_now
+from agentforge_shared.utils.id_generator import generate_id
 from agentforge_shared.utils.pagination import paginate_list
 
 

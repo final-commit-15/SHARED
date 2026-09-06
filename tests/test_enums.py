@@ -1,6 +1,6 @@
 """Enum consistency tests."""
 
-from agentforge_shared.enums.agent import AgentStatus, AgentType
+from agentforge_shared.enums.agent import AgentStatus
 from agentforge_shared.enums.execution import ExecutionStatus
 from agentforge_shared.enums.integration import IntegrationType
 
